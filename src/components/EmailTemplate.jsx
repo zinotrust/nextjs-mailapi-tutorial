@@ -4,7 +4,10 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { sendEmailWithMailAPI } from "@/actions/emailActions";
+import {
+  sendEmailWithMailAPI,
+  updateMailApiList,
+} from "@/actions/emailActions";
 
 export default function EmailTemplate() {
   const [email, setEmail] = useState("");
@@ -45,8 +48,67 @@ export default function EmailTemplate() {
     }
   };
 
+  const updateUserSession = async (userEmail) => {
+    const res = await updateMailApiList({
+      email: userEmail,
+      lastSeenAt: new Date().toISOString(),
+    });
+
+    if (res.error) {
+      console.error("Failed to update contact:", res.error);
+      // Handle failure (e.g., log to your own monitoring)
+    } else {
+      console.log("Contact updated!", res.data);
+    }
+  };
+
+  // const updateUserSubscription = async (userEmail) => {
+  //   const res = await updateMailApiList({
+  //     email: userEmail,
+  //     subscriptionStatus: "active",
+  //     plan: {
+  //       id: "price_1234567890",
+  //       name: "Pro",
+  //       amount: 20,
+  //       interval: "month",
+  //     },
+  //     convertedAt: new Date().toISOString(),
+  //   });
+
+  //   if (res.error) {
+  //     console.error("Failed to update contact:", res.error);
+  //     // Handle failure (e.g., log to your own monitoring)
+  //   } else {
+  //     console.log("Contact updated!", res.data);
+  //   }
+  // };
+
+  const updateUserSubscription = async (userEmail) => {
+    const res = await updateMailApiList({
+      email: userEmail,
+      subscriptionStatus: "canceled",
+      lastSeenAt: new Date().toISOString(),
+      churnedAt: new Date().toISOString(),
+      churnReason: "Too expensive",
+    });
+
+    if (res.error) {
+      console.error("Failed to update contact:", res.error);
+      // Handle failure (e.g., log to your own monitoring)
+    } else {
+      console.log("Contact updated!", res.data);
+    }
+  };
+
   return (
     <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-6">
+      <br />
+      <br />
+      <Button onClick={() => updateUserSubscription("donaldzee.ng@gmail.com")}>
+        Update MailApi User
+      </Button>
+      <br />
+      <br />
       <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
         Send Template Email
       </h3>
